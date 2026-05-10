@@ -2,88 +2,86 @@ import csv
 import json
 import os
 from datetime import datetime
+import requests
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
-STATIC_DIR = os.path.join(BASE_DIR, "static")
-PRODUCTS_FILE = os.path.join(BASE_DIR, "products.json")
-USERS_FILE = os.path.join(BASE_DIR, "users.json")
-STOCK_FILE = os.path.join(BASE_DIR, "stock.csv")
-LOGIN_LOG_FILE = os.path.join(BASE_DIR, "login_log.csv")
+folder = os.path.dirname(os.path.abspath(__file__))
 
-app = Flask(__name__, template_folder=TEMPLATES_DIR, static_folder=STATIC_DIR)
+products_file = os.path.join(folder, "products.json")
+users_file = os.path.join(folder, "users.json")
+stock_file = os.path.join(folder, "stock.csv")
+login_file = os.path.join(folder, "login_log.csv")
+
+app = Flask(
+    __name__,
+    template_folder=os.path.join(folder, "templates"),
+    static_folder=os.path.join(folder, "static"),
+)
 app.secret_key = "skolasprojekts2025"
 
 
-def load_json_file(path):
-    """Nolasa JSON failu un atgriež Python vārdnīcu."""
-    with open(path, "r", encoding="utf-8") as file:
-        return json.load(file)
+def read_json(file_name):
+    with open(file_name, "r", encoding="utf-8") as file:
+        data = json.load(file)
+    return data
 
 
-PRODUCTS = load_json_file(PRODUCTS_FILE)["products"]
-USERS = load_json_file(USERS_FILE)["users"]
+products = read_json(products_file)["products"]
+users = read_json(users_file)["users"]
 
 
-def load_stock_data():
-    """Nolasa produktu krājumu no CSV faila."""
-    stock_by_product = {}
-    with open(STOCK_FILE, "r", encoding="utf-8", newline="") as file:
-        reader = csv.DictReader(file)
-        for row in reader:
+def read_stock():
+    stock = {}
+
+    with open(stock_file, "r", encoding="utf-8", newline="") as file:
+        rows = csv.DictReader(file)
+        for row in rows:
             product_id = int(row["product_id"])
-            stock_by_product[product_id] = {
+            stock[product_id] = {
                 "quantity": int(row["quantity"]),
                 "warehouse": row["warehouse"],
             }
-    return stock_by_product
+
+    return stock
 
 
-def get_products_with_stock():
-    """Apvieno produktu JSON datus ar CSV krājumu datiem."""
-    stock_data = load_stock_data()
-    products = []
-    for product in PRODUCTS:
-        product_copy = product.copy()
-        product_copy["stock"] = stock_data.get(
+def products_with_stock():
+    stock = read_stock()
+    product_list = []
+
+    for product in products:
+        one_product = product.copy()
+        one_product["stock"] = stock.get(
             product["id"], {"quantity": 0, "warehouse": "Nav zināms"}
         )
-        products.append(product_copy)
-    return products
+        product_list.append(one_product)
+
+    return product_list
 
 
-def get_product_by_id(product_id):
-    for product in get_products_with_stock():
+def find_product(product_id):
+    for product in products_with_stock():
         if product["id"] == product_id:
             return product
     return None
 
 
-def write_login_attempt(username, success):
-    """Pieraksta katru pieteikšanās mēģinājumu CSV žurnālā."""
-    file_exists = os.path.exists(LOGIN_LOG_FILE)
-    with open(LOGIN_LOG_FILE, "a", encoding="utf-8", newline="") as file:
+def log_login(username, success):
+    file_exists = os.path.exists(login_file)
+
+    with open(login_file, "a", encoding="utf-8", newline="") as file:
         writer = csv.writer(file)
-        if not file_exists or os.path.getsize(LOGIN_LOG_FILE) == 0:
+
+        if not file_exists or os.path.getsize(login_file) == 0:
             writer.writerow(["timestamp", "username", "success"])
-        writer.writerow(
-            [
-                datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                username,
-                success,
-            ]
-        )
+
+        time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        writer.writerow([time_now, username, success])
 
 
-def fetch_stock_quote(symbol):
-    """Iegūst akciju cenu no Finnhub API."""
-    try:
-        import requests
-    except ImportError:
-        return {"error": True}
+def get_stock(symbol):
 
     api_key = os.getenv("FINNHUB_API_KEY", "d80bvr1r01qq9ln3agi0d80bvr1r01qq9ln3agig")
 
@@ -99,13 +97,15 @@ def fetch_stock_quote(symbol):
         if not data or data.get("c") in (None, 0) or data.get("t") in (None, 0):
             return {"error": True}
 
+        stock_time = datetime.fromtimestamp(int(data["t"])).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
+
         return {
             "symbol": symbol,
             "price": round(float(data["c"]), 2),
             "change_percent": round(float(data.get("dp", 0)), 2),
-            "time": datetime.fromtimestamp(int(data["t"])).strftime(
-                "%Y-%m-%d %H:%M:%S"
-            ),
+            "time": stock_time,
         }
     except (requests.RequestException, ValueError, KeyError):
         return {"error": True}
@@ -113,16 +113,17 @@ def fetch_stock_quote(symbol):
 
 @app.route("/")
 def index():
-    products = get_products_with_stock()
-    return render_template("index.html", products=products)
+    return render_template("index.html", products=products_with_stock())
 
 
 @app.route("/product/<int:id>")
 def product_detail(id):
-    product = get_product_by_id(id)
+    product = find_product(id)
+
     if product is None:
         flash("Produkts netika atrasts")
         return redirect(url_for("index"))
+
     return render_template("product.html", product=product)
 
 
@@ -131,12 +132,13 @@ def login():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
+        success = False
 
-        success = any(
-            user["username"] == username and user["password"] == password
-            for user in USERS
-        )
-        write_login_attempt(username, success)
+        for user in users:
+            if user["username"] == username and user["password"] == password:
+                success = True
+
+        log_login(username, success)
 
         if success:
             session["user"] = username
@@ -150,21 +152,31 @@ def login():
 
 @app.route("/stocks")
 def stocks():
-    quotes = [fetch_stock_quote("NVDA"), fetch_stock_quote("AMD")]
-    stock_data = None if any(item.get("error") for item in quotes) else quotes
+    stock_data = [get_stock("NVDA"), get_stock("AMD")]
+
+    for item in stock_data:
+        if item.get("error"):
+            stock_data = None
+
     return render_template("stocks.html", stock_data=stock_data)
 
 
 @app.route("/category/<name>")
 def category(name):
-    products = get_products_with_stock()
+    shown_products = products_with_stock()
+
     if name.lower() != "all":
-        products = [
+        shown_products = [
             product
-            for product in products
+            for product in shown_products
             if product["category"].lower() == name.lower()
         ]
-    return render_template("index.html", products=products, category=name)
+
+    return render_template(
+        "index.html",
+        products=shown_products,
+        category=name,
+    )
 
 
 if __name__ == "__main__":
