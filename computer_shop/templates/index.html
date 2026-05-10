@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="catalog-hero mb-4">
+    <p class="eyebrow mb-2">Skolas projekts • TechShop</p>
+    <h1>Datoru detaļu veikals</h1>
+
+</section>
+
+<div class="catalog-toolbar mb-4">
+    <div>
+        <h2 class="h4 mb-1">
+            {% if category and category != "all" %}
+                Kategorija: {{ category }}
+            {% else %}
+                Visi produkti
+            {% endif %}
+        </h2>
+        <p class="text-muted mb-0">Izvēlies kategoriju vai apskati produkta detaļas.</p>
+    </div>
+    <div class="category-pills" role="group" aria-label="Kategorijas">
+        <a class="category-pill" href="{{ url_for('category', name='all') }}">Visi</a>
+        <a class="category-pill" href="{{ url_for('category', name='CPU') }}">CPU</a>
+        <a class="category-pill" href="{{ url_for('category', name='GPU') }}">GPU</a>
+        <a class="category-pill" href="{{ url_for('category', name='RAM') }}">RAM</a>
+    </div>
+</div>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for msg in messages %}
+            <div class="alert alert-info custom-alert">{{ msg }}</div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+    {% for product in products %}
+        <div class="col-12 col-sm-6 col-lg-4">
+            <div class="product-card h-100">
+                <div class="product-media">
+                    <img src="{{ product.image_url }}" class="img-fluid" alt="{{ product.name }}">
+                    <span class="product-category">{{ product.category }}</span>
+                </div>
+                <div class="product-body">
+                    <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                        <h3>{{ product.name }}</h3>
+                        {% if product.in_stock %}
+                            <span class="stock-badge stock-yes">Noliktavā</span>
+                        {% else %}
+                            <span class="stock-badge stock-no">Nav noliktavā</span>
+                        {% endif %}
+                    </div>
+                    <p class="product-description">{{ product.description }}</p>
+                    <div class="stock-line">
+                        {{ product.stock.quantity }} gab. • {{ product.stock.warehouse }}
+                    </div>
+                    <div class="product-bottom">
+                        <div>
+                            <span class="price">€{{ "%.2f"|format(product.price) }}</span>
+                            <small>{{ product.category }}</small>
+                        </div>
+                        <a href="{{ url_for('product_detail', id=product.id) }}" class="btn btn-primary">Skatīt vairāk</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="col-md-6 mx-auto">
+    <div class="login-heading mb-4">
+        <p class="eyebrow mb-2">TechShop konts</p>
+        <h1 class="h2 mb-1">Pieteikšanās</h1>
+        <p class="text-muted mb-0">Vienkārša JSON autentifikācija skolas projekta vajadzībām.</p>
+    </div>
+
+    {% for msg in get_flashed_messages() %}
+        <div class="alert alert-info custom-alert">{{ msg }}</div>
+    {% endfor %}
+
+    <form method="post" action="{{ url_for('login') }}" class="login-panel p-4 rounded">
+        <div class="mb-3">
+            <label for="username" class="form-label">Lietotājvārds</label>
+            <input type="text" class="form-control" id="username" name="username" required autocomplete="username">
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Parole</label>
+            <input type="password" class="form-control" id="password" name="password" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Pieteikties</button>
+    </form>
+</div>
+{% endblock %}

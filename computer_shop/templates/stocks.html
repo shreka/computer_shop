@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="stock-hero mb-4">
+    <p class="eyebrow mb-2">Tirgus dati</p>
+    <h1 class="h2 mb-2">Nvidia un AMD akciju cenas</h1>
+    <p class="text-muted mb-0">Cenas tiek ielasītas no Finnhub API, ja ir pieejama API atslēga.</p>
+</section>
+
+{% if stock_data %}
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        {% for stock in stock_data %}
+            <div class="col">
+                <div class="stock-card h-100">
+                    <div class="card-body">
+                        <span class="product-category static-category">{{ stock.symbol }}</span>
+                        <p class="price fs-3 mt-3 mb-1">$ {{ "%.2f"|format(stock.price) }}</p>
+                        <p class="{% if stock.change_percent >= 0 %}text-success{% else %}text-danger{% endif %} mb-2">
+                            {{ stock.change_percent }}%
+                        </p>
+                        <p class="text-muted mb-0">Atjaunināts: {{ stock.time }}</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-warning custom-alert">Dati pašlaik nav pieejami</div>
+{% endif %}
+{% endblock %}

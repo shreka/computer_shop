@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="product-page">
+    <div class="row g-4 align-items-start">
+        <div class="col-md-6">
+            <div class="detail-media">
+                <img src="{{ product.image_url }}" class="img-fluid rounded product-detail-image" alt="{{ product.name }}">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="detail-panel">
+                <div class="mb-3">
+                    <span class="product-category static-category">{{ product.category }}</span>
+                    {% if product.in_stock %}
+                        <span class="stock-badge stock-yes">Noliktavā</span>
+                    {% else %}
+                        <span class="stock-badge stock-no">Nav noliktavā</span>
+                    {% endif %}
+                </div>
+                <h1>{{ product.name }}</h1>
+                <p class="price fs-3">€{{ "%.2f"|format(product.price) }}</p>
+                <p class="lead">{{ product.description }}</p>
+                <p class="text-muted">Noliktava: {{ product.stock.warehouse }} | Daudzums: {{ product.stock.quantity }}</p>
+
+                <div class="table-responsive mt-4">
+                    <table class="table table-striped table-responsive spec-table">
+                        <tbody>
+                            {% for key, value in product.specs.items() %}
+                                <tr>
+                                    <th scope="row">{{ key.replace("_", " ").title() }}</th>
+                                    <td>{{ value }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <a href="{{ url_for('index') }}" class="btn btn-outline-secondary mt-3">Atpakaļ</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

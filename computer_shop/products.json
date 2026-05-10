@@ -1,0 +1,112 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Intel Core i5-13600K",
+      "category": "CPU",
+      "price": 319.99,
+      "description": "Intel Core i5-13600K ir jaudīgs 13. paaudzes galddatora procesors spēlēm, programmēšanai un video apstrādei. Tas apvieno Performance un Efficient kodolus, tāpēc labi tiek galā gan ar vienkodola, gan daudzuzdevumu slodzi.",
+      "specs": {
+        "cores": "14 kodoli (6P + 8E)",
+        "threads": "20 pavedieni",
+        "base_clock": "3.5 GHz P-core, 2.6 GHz E-core",
+        "boost_clock": "līdz 5.1 GHz",
+        "cache": "24 MB Intel Smart Cache",
+        "socket": "LGA1700",
+        "tdp": "125 W"
+      },
+      "image_url": "/static/images/intel_i5_13600K.jpg",
+      "in_stock": true
+    },
+    {
+      "id": 2,
+      "name": "AMD Ryzen 5 7600X",
+      "category": "CPU",
+      "price": 249.99,
+      "description": "AMD Ryzen 5 7600X ir ātrs Zen 4 procesors AM5 platformai. Tas ir piemērots modernām spēļu sistēmām, ikdienas darbam un radošiem uzdevumiem, saglabājot labu cenas un veiktspējas attiecību.",
+      "specs": {
+        "cores": "6 kodoli",
+        "threads": "12 pavedieni",
+        "base_clock": "4.7 GHz",
+        "boost_clock": "līdz 5.3 GHz",
+        "cache": "32 MB L3 cache",
+        "socket": "AM5",
+        "tdp": "105 W"
+      },
+      "image_url": "/static/images/and_ryzen_5_7600X.jpg",
+      "in_stock": true
+    },
+    {
+      "id": 3,
+      "name": "Nvidia GeForce RTX 4060",
+      "category": "GPU",
+      "price": 329.99,
+      "description": "Nvidia GeForce RTX 4060 ir efektīva videokarte 1080p spēlēm, ray tracing izmēģināšanai un darbam ar CUDA paātrinātām programmām. DLSS 3 atbalsts palīdz iegūt augstāku kadru skaitu jaunākās spēlēs.",
+      "specs": {
+        "memory": "8 GB GDDR6",
+        "cuda_cores": "3072",
+        "boost_clock": "līdz 2.46 GHz",
+        "memory_bus": "128-bit",
+        "ray_tracing": "3. paaudzes RT kodoli",
+        "recommended_psu": "550 W",
+        "tdp": "115 W"
+      },
+      "image_url": "/static/images/nvidia_geforce_RTX_4060.jpg",
+      "in_stock": true
+    },
+    {
+      "id": 4,
+      "name": "AMD Radeon RX 7600",
+      "category": "GPU",
+      "price": 289.99,
+      "description": "AMD Radeon RX 7600 ir moderna RDNA 3 videokarte, kas paredzēta vienmērīgai 1080p spēlēšanai un multivides darbam. Tā piedāvā labu energoefektivitāti un atbalsta jaunākās AMD grafikas tehnoloģijas.",
+      "specs": {
+        "memory": "8 GB GDDR6",
+        "stream_processors": "2048",
+        "boost_clock": "līdz 2.66 GHz",
+        "memory_bus": "128-bit",
+        "architecture": "RDNA 3",
+        "recommended_psu": "550 W",
+        "tdp": "165 W"
+      },
+      "image_url": "/static/images/and_radeon_RX_7600.jpg",
+      "in_stock": true
+    },
+    {
+      "id": 5,
+      "name": "Kingston Fury Beast 16GB DDR5",
+      "category": "RAM",
+      "price": 74.99,
+      "description": "Kingston Fury Beast 16GB DDR5 ir ātra operatīvā atmiņa jaunām DDR5 sistēmām. Tā labi der spēlēm, skolas projektiem, programmēšanai un ikdienas produktivitātei.",
+      "specs": {
+        "capacity": "16 GB",
+        "type": "DDR5",
+        "speed": "5600 MT/s",
+        "latency": "CL36",
+        "voltage": "1.25 V",
+        "form_factor": "DIMM",
+        "profile": "Intel XMP 3.0"
+      },
+      "image_url": "/static/images/kingston_fury_beast_16GB_DDR5.jpg",
+      "in_stock": true
+    },
+    {
+      "id": 6,
+      "name": "Corsair Vengeance 32GB DDR4",
+      "category": "RAM",
+      "price": 89.99,
+      "description": "Corsair Vengeance 32GB DDR4 komplekts ir uzticama izvēle esošām DDR4 platformām. 32 GB ietilpība palīdz vienlaikus lietot vairākas programmas, pārlūka cilnes un izstrādes rīkus.",
+      "specs": {
+        "capacity": "32 GB (2 x 16 GB)",
+        "type": "DDR4",
+        "speed": "3200 MT/s",
+        "latency": "CL16",
+        "voltage": "1.35 V",
+        "form_factor": "DIMM",
+        "profile": "Intel XMP 2.0"
+      },
+      "image_url": "/static/images/corsair_vengeance_32GB_DDR4.jpg",
+      "in_stock": false
+    }
+  ]
+}
